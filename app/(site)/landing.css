@@ -1,22 +1,26 @@
 /*
- * The marketing surface. Opposite palette to the explorer on purpose: warm
- * paper, a serif voice, one clay accent, and a lot of air. The explorer is for
- * reading data quickly; this page is for reading sentences slowly.
+ * The marketing surface, dark.
+ *
+ * Warm dark rather than black: the explorer at /network is already near-black
+ * and monospaced, and if this page used the same ground the two would read as
+ * one undifferentiated surface. Here the ink is warm, the voice is serif, and
+ * there is a lot of air. One clay accent, used only where it means something.
  *
  * It renders with no database and no RPC, so it is always up even when the
  * indexer is not.
  */
 
 .landing {
-  --paper: #faf9f5;
-  --paper-2: #f0eee6;
-  --paper-3: #e8e5db;
-  --ink: #191917;
-  --ink-2: #3d3d3a;
-  --ink-3: #6b6a64;
-  --rule: #dfdcd1;
-  --clay: #cc785c;
-  --clay-deep: #a8543a;
+  --paper: #1f1e1d;
+  --paper-2: #2a2926;
+  --paper-3: #35332f;
+  --ink: #f2f0ea;
+  --ink-2: #c6c3b9;
+  --ink-3: #918e85;
+  --rule: #3a3835;
+  --rule-bright: #4a4744;
+  --clay: #d97757;
+  --clay-lift: #e8946f;
 
   min-height: 100vh;
   background: var(--paper);
@@ -27,10 +31,10 @@
   -webkit-font-smoothing: antialiased;
 }
 
-/* Body carries the explorer's dark background by default; without this the
-   overscroll area above and below the page flashes near-black. */
+/* The body background is set by the explorer's stylesheet; without this the
+   overscroll area above and below the page flashes the wrong dark. */
 body:has(.landing) {
-  background: #faf9f5;
+  background: #1f1e1d;
 }
 
 .landing a {
@@ -83,7 +87,7 @@ body:has(.landing) {
 }
 
 .landing .nav-links a:hover {
-  color: var(--clay-deep);
+  color: var(--clay-lift);
 }
 
 /* Buttons ----------------------------------------------------------------- */
@@ -101,24 +105,26 @@ body:has(.landing) {
   white-space: nowrap;
 }
 
+/* Near-black on clay rather than white: white on this coral is about 3:1, which
+   is under the threshold for body-sized text. Dark ink clears it comfortably. */
 .landing .btn-primary {
   background: var(--clay);
-  color: #fff;
+  color: #201f1d;
 }
 
 .landing .btn-primary:hover {
-  background: var(--clay-deep);
+  background: var(--clay-lift);
 }
 
 .landing .btn-ghost {
-  border-color: var(--rule);
+  border-color: var(--rule-bright);
   color: var(--ink);
   background: transparent;
 }
 
 .landing .btn-ghost:hover {
   background: var(--paper-2);
-  border-color: #cfcbbd;
+  border-color: #5d5a55;
 }
 
 /* Hero -------------------------------------------------------------------- */
@@ -152,7 +158,7 @@ body:has(.landing) {
 
 .landing h1 em {
   font-style: italic;
-  color: var(--clay-deep);
+  color: var(--clay);
 }
 
 .landing .lede {
@@ -193,6 +199,7 @@ body:has(.landing) {
   line-height: 1.18;
   letter-spacing: -0.015em;
   margin: 0 0 16px;
+  color: var(--ink);
 }
 
 .landing h3 {
@@ -200,6 +207,7 @@ body:has(.landing) {
   font-weight: 600;
   margin: 0 0 7px;
   letter-spacing: -0.005em;
+  color: var(--ink);
 }
 
 .landing p {
@@ -212,7 +220,7 @@ body:has(.landing) {
   font-size: 12.5px;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--clay-deep);
+  color: var(--clay);
   margin-bottom: 14px;
   font-weight: 500;
 }
@@ -266,6 +274,7 @@ body:has(.landing) {
 .landing .def dt {
   font-weight: 600;
   font-size: 15px;
+  color: var(--ink);
 }
 
 .landing .def dd {
@@ -295,6 +304,42 @@ body:has(.landing) {
 .landing .figure svg {
   display: block;
   margin: 0 auto;
+}
+
+/* The diagram takes its colours from here rather than from hardcoded
+   attributes, so the palette above is the only place a theme is defined. */
+.landing .dg-gen {
+  fill: var(--ink-3);
+  font-size: 11px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  letter-spacing: 1.2px;
+}
+
+.landing .dg-edge {
+  fill: none;
+  stroke: var(--rule-bright);
+  stroke-width: 1.5;
+}
+
+.landing .dg-node {
+  fill: var(--paper);
+  stroke: var(--rule-bright);
+  stroke-width: 1.5;
+}
+
+.landing .dg-node.is-root {
+  fill: var(--clay);
+  stroke: var(--clay-lift);
+}
+
+.landing .dg-label {
+  fill: var(--ink-2);
+  font-size: 12.5px;
+}
+
+.landing .dg-label.is-root {
+  fill: var(--ink);
+  font-weight: 600;
 }
 
 .landing .figcaption {
@@ -374,10 +419,15 @@ body:has(.landing) {
   margin-bottom: 0;
 }
 
+.landing .limits b {
+  color: var(--ink);
+}
+
 .landing code {
   font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   font-size: 0.88em;
   background: var(--paper-3);
+  color: var(--ink);
   padding: 1.5px 5px;
   border-radius: 4px;
 }
@@ -399,13 +449,13 @@ body:has(.landing) {
 }
 
 .landing footer a:hover {
-  color: var(--clay-deep);
+  color: var(--clay-lift);
 }
 
 .landing .disclaimer {
   margin-top: 22px;
   font-size: 12.5px;
   line-height: 1.6;
-  color: #8a887f;
+  color: #7b786f;
   max-width: 760px;
 }

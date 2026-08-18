@@ -1,11 +1,18 @@
 import Link from "next/link";
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "./landing.css";
 
 export const metadata: Metadata = {
   title: "Patient Zero — capital that spreads by choice",
   description:
     "Main Token trading fees fund epoch allocations. Holders direct their own allocation, and every edge in the propagation graph comes from a confirmed on-chain transaction.",
+};
+
+// Matches the page ground so mobile browser chrome does not frame a dark page
+// in a light bar.
+export const viewport: Viewport = {
+  themeColor: "#1f1e1d",
+  colorScheme: "dark",
 };
 
 const REPO = "https://github.com/draftsify/patient-zero";
@@ -316,16 +323,7 @@ function PropagationDiagram() {
         { x: 430, t: "gen 2" },
         { x: 610, t: "gen 3" },
       ].map((g) => (
-        <text
-          key={g.t}
-          x={g.x}
-          y={222}
-          textAnchor="middle"
-          fill="#8a887f"
-          fontSize="11"
-          fontFamily="ui-monospace, monospace"
-          letterSpacing="1.2"
-        >
+        <text key={g.t} className="dg-gen" x={g.x} y={222} textAnchor="middle">
           {g.t}
         </text>
       ))}
@@ -337,30 +335,19 @@ function PropagationDiagram() {
         return (
           <path
             key={`${from}-${to}`}
+            className="dg-edge"
             d={`M ${f.x + f.r} ${f.y} C ${mid} ${f.y}, ${mid} ${t.y}, ${t.x - t.r} ${t.y}`}
-            fill="none"
-            stroke="#cfcbbd"
-            strokeWidth="1.5"
           />
         );
       })}
 
       {nodes.map((n) => (
         <g key={n.id}>
-          <circle
-            cx={n.x}
-            cy={n.y}
-            r={n.r}
-            fill={n.main ? "#cc785c" : "#faf9f5"}
-            stroke={n.main ? "#a8543a" : "#cfcbbd"}
-            strokeWidth="1.5"
-          />
+          <circle className={n.main ? "dg-node is-root" : "dg-node"} cx={n.x} cy={n.y} r={n.r} />
           <text
+            className={n.main ? "dg-label is-root" : "dg-label"}
             x={n.x + n.r + 9}
             y={n.y + 4}
-            fill={n.main ? "#191917" : "#3d3d3a"}
-            fontSize="12.5"
-            fontWeight={n.main ? 600 : 400}
           >
             {n.label}
           </text>
