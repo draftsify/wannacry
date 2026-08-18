@@ -1,24 +1,25 @@
 import Link from "next/link";
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
+import { WannaCryMark } from "@/components/WannaCryMark";
+import { ConnectCta } from "@/components/ConnectCta";
+import { Reveal } from "@/components/Reveal";
 import "./landing.css";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans", display: "swap" });
 
 export const metadata: Metadata = {
-  title: "Patient Zero — capital that spreads by choice",
+  title: "WannaCry — capital that spreads by choice",
   description:
     "Main Token trading fees fund epoch allocations. Holders direct their own allocation, and every edge in the propagation graph comes from a confirmed on-chain transaction.",
 };
 
-// Matches the page ground so mobile browser chrome does not frame a dark page
-// in a light bar.
 export const viewport: Viewport = {
-  themeColor: "#0a0a0a",
-  colorScheme: "dark",
+  themeColor: "#e9e8e6",
+  colorScheme: "light",
 };
 
-const REPO = "https://github.com/draftsify/patient-zero";
+const REPO = "https://github.com/draftsify/wannacry";
 
 /**
  * Static by construction — no database, no RPC. The marketing page stays up when
@@ -30,8 +31,8 @@ export default function LandingPage() {
       <div className="wrap">
         <nav className="nav">
           <Link href="/" className="logo">
-            <Mark />
-            Patient Zero
+            <WannaCryMark size={30} />
+            WannaCry
           </Link>
           <div className="nav-links nav-mid">
             <Link href="/network">Network</Link>
@@ -40,35 +41,26 @@ export default function LandingPage() {
               GitHub
             </a>
           </div>
-          <Link href="/network" className="btn btn-outline">
-            Open the explorer
-          </Link>
+          <ConnectCta variant="nav" />
         </nav>
       </div>
 
       <div className="wrap">
         <header className="hero">
-          <h1>
+          <WannaCryMark size={76} className="hero-mark" />
+          <h1 className="rise" style={{ animationDelay: "80ms" }}>
             Capital that spreads
             <br />
             <span className="dim">by choice, not by code</span>
           </h1>
-          <p className="lede">
+          <p className="lede rise" style={{ animationDelay: "180ms" }}>
             Trading fees from one token fund a treasury. Each epoch, that treasury is allocated to
             holders — and each holder decides, personally, where their share goes next. What emerges
             is a propagation graph nobody authored.
           </p>
-          <div className="cta">
-            <Link href="/agent" className="btn btn-primary">
-              Connect your wallet
-            </Link>
-            <a href={REPO} className="btn btn-outline" target="_blank" rel="noreferrer">
-              Read the architecture
-            </a>
+          <div className="rise" style={{ animationDelay: "280ms" }}>
+            <ConnectCta />
           </div>
-          <p className="hero-note">
-            No autonomous spending. Every allocation needs two signatures from you.
-          </p>
 
           <div className="orbit">
             <div className="glow" aria-hidden="true" />
@@ -78,234 +70,229 @@ export default function LandingPage() {
       </div>
 
       <div className="wrap">
-        <div className="strip">
-          <span>
-            <i />
-            Snapshot-frozen epochs
-          </span>
-          <span>
-            <i />
-            Two signatures per allocation
-          </span>
-          <span>
-            <i />
-            Graph derived from chain
-          </span>
-          <span>
-            <i />
-            Open source
-          </span>
-        </div>
+        <Reveal>
+          <div className="strip">
+            <span>
+              <i />
+              Snapshot-frozen epochs
+            </span>
+            <span>
+              <i />
+              Two signatures per allocation
+            </span>
+            <span>
+              <i />
+              Graph derived from chain
+            </span>
+            <span>
+              <i />
+              Open source
+            </span>
+          </div>
+        </Reveal>
       </div>
 
       <div className="wrap">
         <section>
-          <h2>
-            One token,
-            <br />
-            <span className="dim">then a network</span>
-          </h2>
-          <p>
-            The Main Token is Patient Zero. Its fees accumulate in a treasury, and at each epoch a
-            defined share becomes allocation capital for the holders in that epoch&apos;s snapshot.
-            The allocation does not land in your wallet as free SOL — it lands in an agent that will
-            only spend it into a swap you authorize. That single constraint is what makes the graph
-            exist.
-          </p>
+          <Reveal>
+            <h2>
+              One token,
+              <br />
+              <span className="dim">then a network</span>
+            </h2>
+            <p>
+              The Main Token is Patient Zero. Its fees accumulate in a treasury, and at each epoch a
+              defined share becomes allocation capital for the holders in that epoch&apos;s snapshot.
+              The allocation does not land in your wallet as free SOL — it lands in an agent that
+              will only spend it into a swap you authorize. That single constraint is what makes the
+              graph exist.
+            </p>
+          </Reveal>
 
           <div className="cards">
-            <article className="card">
-              <div className="icon">
+            <Reveal delay={0}>
+              <article className="card">
                 <BurstIcon />
-              </div>
-              <h3>Fees become allocation</h3>
-              <p>
-                Trading activity funds the treasury. Each epoch releases a defined share of it to the
-                holders in that epoch&apos;s snapshot.
-              </p>
-              <span className="note">Deterministic, frozen at a recorded slot</span>
-            </article>
-
-            <article className="card">
-              <div className="icon">
+                <h3>Fees become allocation</h3>
+                <p>
+                  Trading activity funds the treasury. Each epoch releases a defined share of it to
+                  the holders in that epoch&apos;s snapshot.
+                </p>
+                <span className="note">Frozen at a recorded slot</span>
+              </article>
+            </Reveal>
+            <Reveal delay={90}>
+              <article className="card">
                 <RingIcon />
-              </div>
-              <h3>You direct it</h3>
-              <p>
-                Buy back the Main Token, or paste any Solana mint. The agent quotes, inspects and
-                explains — it never chooses.
-              </p>
-              <span className="note">Two wallet approvals, always</span>
-            </article>
-
-            <article className="card">
-              <div className="icon">
+                <h3>You direct it</h3>
+                <p>
+                  Buy back the Main Token, or paste any Solana mint. The agent quotes, inspects and
+                  explains — it never chooses.
+                </p>
+                <span className="note">Two wallet approvals, always</span>
+              </article>
+            </Reveal>
+            <Reveal delay={180}>
+              <article className="card">
                 <GridIcon />
-              </div>
-              <h3>The network records it</h3>
-              <p>
-                Each confirmed swap is an infection event, verified against the transaction&apos;s own
-                balances before it counts.
-              </p>
-              <span className="note">Chain-derived, not app-asserted</span>
-            </article>
+                <h3>The network records it</h3>
+                <p>
+                  Each confirmed swap is an infection event, verified against the transaction&apos;s
+                  own balances before it counts.
+                </p>
+                <span className="note">Chain-derived, not app-asserted</span>
+              </article>
+            </Reveal>
           </div>
         </section>
 
         <section>
-          <h2>
-            The loop, <span className="dim">end to end</span>
-          </h2>
-          <ol className="flow">
-            <li>
-              <span>
+          <Reveal>
+            <h2>
+              The loop, <span className="dim">end to end</span>
+            </h2>
+            <ol className="flow">
+              <li>
                 Trading activity on the <b>Main Token</b> generates protocol fees.
-              </span>
-            </li>
-            <li>
-              <span>
+              </li>
+              <li>
                 Fees accumulate in the <b>treasury</b>.
-              </span>
-            </li>
-            <li>
-              <span>
+              </li>
+              <li>
                 An <b>epoch snapshot</b> freezes the holder set at a recorded slot. Allocations never
                 recompute afterwards.
-              </span>
-            </li>
-            <li>
-              <span>
+              </li>
+              <li>
                 A holder connects a wallet and their <b>allocation</b> appears.
-              </span>
-            </li>
-            <li>
-              <span>They choose: buy back the Main Token, or paste any Solana mint address.</span>
-            </li>
-            <li>
-              <span>
+              </li>
+              <li>They choose: buy back the Main Token, or paste any Solana mint address.</li>
+              <li>
                 They review the route, the price impact and the mint&apos;s risk flags, then{" "}
                 <b>sign twice</b> — once for the authorization, once for the transaction.
-              </span>
-            </li>
-            <li>
-              <span>
+              </li>
+              <li>
                 The swap executes. The event is <b>verified from chain</b>, not from what the app
                 believes happened.
-              </span>
-            </li>
-            <li>
-              <span>
+              </li>
+              <li>
                 The <b>propagation graph</b> updates.
-              </span>
-            </li>
-          </ol>
+              </li>
+            </ol>
+          </Reveal>
         </section>
 
         <section>
-          <h2>
-            Every edge is two transactions
-            <br />
-            <span className="dim">from one wallet</span>
-          </h2>
-          <p>
-            It would be easy to draw a beautiful tree. If every asset&apos;s parent were simply the
-            Main Token, the graph would be one level deep — a star — and inventing depth to make it
-            look organic would be fabrication.
-          </p>
-          <p>
-            So the rule is contact tracing. An asset&apos;s parent is the previous asset that its
-            index case — the first agent to bring capital there — had itself allocated to. If that
-            agent was allocating for the first time, the parent is Patient Zero, because the capital
-            genuinely came from Main Token fees.
-          </p>
-
-          <div className="figure">
-            <PropagationDiagram />
-            <p className="figcaption">
-              Depth appears only when an agent who already moved capital somewhere moves it somewhere
-              new. A shallow network is drawn shallow.
+          <Reveal>
+            <h2>
+              Every edge is two transactions
+              <br />
+              <span className="dim">from one wallet</span>
+            </h2>
+            <p>
+              It would be easy to draw a beautiful tree. If every asset&apos;s parent were simply the
+              Main Token, the graph would be one level deep — a star — and inventing depth to make it
+              look organic would be fabrication.
             </p>
-          </div>
+            <p>
+              So the rule is contact tracing. An asset&apos;s parent is the previous asset that its
+              index case — the first agent to bring capital there — had itself allocated to. If that
+              agent was allocating for the first time, the parent is Patient Zero, because the
+              capital genuinely came from Main Token fees.
+            </p>
+          </Reveal>
 
-          <dl className="defs">
-            <div className="def">
-              <dt>Agent</dt>
-              <dd>A wallet with at least one confirmed allocation. Counted once, never per event.</dd>
+          <Reveal>
+            <div className="figure">
+              <PropagationDiagram />
+              <p className="figcaption">
+                Depth appears only when an agent who already moved capital somewhere moves it
+                somewhere new. A shallow network is drawn shallow.
+              </p>
             </div>
-            <div className="def">
-              <dt>Infection</dt>
-              <dd>One confirmed on-chain swap of epoch allocation into a mint.</dd>
-            </div>
-            <div className="def">
-              <dt>Parent</dt>
-              <dd>
-                The previous asset an asset&apos;s index case had infected. Frozen at first infection,
-                never revised.
-              </dd>
-            </div>
-            <div className="def">
-              <dt>Generation</dt>
-              <dd>
-                Depth in that tree. Patient Zero is zero. Deliberately not the same thing as an
-                epoch, and shown separately.
-              </dd>
-            </div>
-            <div className="def">
-              <dt>Network penetration</dt>
-              <dd>An asset&apos;s unique agents divided by all active agents.</dd>
-            </div>
-          </dl>
+          </Reveal>
+
+          <Reveal>
+            <dl className="defs">
+              <div className="def">
+                <dt>Agent</dt>
+                <dd>A wallet with at least one confirmed allocation. Counted once, never per event.</dd>
+              </div>
+              <div className="def">
+                <dt>Infection</dt>
+                <dd>One confirmed on-chain swap of epoch allocation into a mint.</dd>
+              </div>
+              <div className="def">
+                <dt>Parent</dt>
+                <dd>
+                  The previous asset an asset&apos;s index case had infected. Frozen at first
+                  infection, never revised.
+                </dd>
+              </div>
+              <div className="def">
+                <dt>Generation</dt>
+                <dd>
+                  Depth in that tree. Patient Zero is zero. Deliberately not the same thing as an
+                  epoch, and shown separately.
+                </dd>
+              </div>
+              <div className="def">
+                <dt>Network penetration</dt>
+                <dd>An asset&apos;s unique agents divided by all active agents.</dd>
+              </div>
+            </dl>
+          </Reveal>
         </section>
 
         <section>
-          <h2>
-            What this <span className="dim">is not</span>
-          </h2>
-          <p>
-            This is a prototype mechanism, and the parts that are not finished are worth stating
-            before you connect anything.
-          </p>
-
-          <div className="limits">
-            <ul>
-              <li>
-                <b>Not yield, income, dividends, or a return.</b> Allocation is capital you direct
-                into a swap you choose. Whatever you buy can go to zero, and usually does.
-              </li>
-              <li>
-                <b>The treasury key is hot.</b> Allocation accounting is off-chain today. The
-                on-chain program that removes that trust assumption is specified and not yet built.
-              </li>
-              <li>
-                <b>Equal allocation is farmable.</b> Splitting a bag across wallets multiplies the
-                take. A minimum holding sets a price on that attack; proportional weighting removes
-                it, and is the documented next step.
-              </li>
-              <li>
-                <b>No model is in the loop.</b> The console is deterministic. Nothing in this system
-                spreads a message, promotes a token, or takes an action on its own.
-              </li>
-            </ul>
-          </div>
+          <Reveal>
+            <h2>
+              What this <span className="dim">is not</span>
+            </h2>
+            <p>
+              This is a prototype mechanism, and the parts that are not finished are worth stating
+              before you connect anything.
+            </p>
+            <div className="limits">
+              <ul>
+                <li>
+                  <b>Not yield, income, dividends, or a return.</b> Allocation is capital you direct
+                  into a swap you choose. Whatever you buy can go to zero, and usually does.
+                </li>
+                <li>
+                  <b>The treasury key is hot.</b> Allocation accounting is off-chain today. The
+                  on-chain program that removes that trust assumption is specified and not yet built.
+                </li>
+                <li>
+                  <b>Equal allocation is farmable.</b> Splitting a bag across wallets multiplies the
+                  take. A minimum holding sets a price on that attack; proportional weighting removes
+                  it, and is the documented next step.
+                </li>
+                <li>
+                  <b>No model is in the loop.</b> The console is deterministic. Nothing in this
+                  system spreads a message, promotes a token, or takes an action on its own.
+                </li>
+              </ul>
+            </div>
+          </Reveal>
         </section>
 
-        <div className="cta-block">
-          <Traces />
-          <h2>Direct your first allocation</h2>
-          <p>
-            Connect the wallet that held the Main Token at the epoch snapshot. Connecting is
-            read-only, and nothing moves until you sign.
-          </p>
-          <Link href="/agent" className="btn btn-light">
-            Open your agent
-          </Link>
-        </div>
+        <Reveal>
+          <div className="cta-block">
+            <Traces />
+            <h2>Direct your first allocation</h2>
+            <p>
+              Connect the wallet that held the Main Token at the epoch snapshot. Connecting is
+              read-only, and nothing moves until you sign.
+            </p>
+            <ConnectCta />
+          </div>
+        </Reveal>
       </div>
 
       <div className="wrap">
         <footer>
           <div className="row">
-            <span>Patient Zero — an allocation network on Solana.</span>
+            <span>WannaCry — an allocation network on Solana.</span>
             <span>
               <a href={REPO} target="_blank" rel="noreferrer">
                 Source
@@ -321,7 +308,9 @@ export default function LandingPage() {
             Nothing here is financial, legal or tax advice, and nothing here is an offer. Directing
             an allocation means buying a token on a public market with all of the risk that carries,
             including total loss. The economic mechanism is experimental and may change or be
-            switched off. This project is independent and not affiliated with any other company.
+            switched off. The name is a reference and nothing more: this project is independent,
+            unaffiliated with any other product or entity, and distributes no software that runs on
+            your machine.
           </p>
         </footer>
       </div>
@@ -333,37 +322,29 @@ export default function LandingPage() {
 /* Artwork                                                             */
 /* ------------------------------------------------------------------ */
 
-function Mark() {
-  return (
-    <svg width="26" height="26" viewBox="0 0 26 26" aria-hidden="true">
-      {[10.5, 7.5, 4.5].map((r) => (
-        <circle key={r} cx="13" cy="13" r={r} fill="none" stroke="#ff5101" strokeWidth="1.6" />
-      ))}
-      <circle cx="13" cy="13" r="2" fill="#ff5101" />
-    </svg>
-  );
-}
-
 /**
  * The hero figure: Patient Zero at the centre, generations as concentric rings.
  * It illustrates the model rather than reporting it — the live network lives at
  * /network, where every node comes from a confirmed transaction.
+ *
+ * Rings counter-rotate at different speeds. Positions are computed from fixed
+ * inputs with no randomness, so server and client render identical markup.
  */
 function OrbitFigure() {
   const cx = 450;
   const cy = 430;
   const rings = [
-    { r: 130, nodes: 5, size: 5.5, seed: 0.4 },
-    { r: 210, nodes: 9, size: 4.5, seed: 1.1 },
-    { r: 292, nodes: 13, size: 3.8, seed: 0.2 },
-    { r: 376, nodes: 17, size: 3.2, seed: 1.7 },
+    { r: 130, nodes: 5, size: 5.5, seed: 0.4, cls: "ring-a" },
+    { r: 210, nodes: 9, size: 4.5, seed: 1.1, cls: "ring-b" },
+    { r: 292, nodes: 13, size: 3.8, seed: 0.2, cls: "ring-c" },
+    { r: 376, nodes: 17, size: 3.2, seed: 1.7, cls: "ring-b" },
   ];
 
   return (
     <svg viewBox="0 0 900 700" role="img" aria-label="Propagation rings radiating from Patient Zero">
       <defs>
-        <radialGradient id="core" cx="50%" cy="50%">
-          <stop offset="0%" stopColor="#ffb08a" />
+        <radialGradient id="wc-core" cx="50%" cy="50%">
+          <stop offset="0%" stopColor="#ffa877" />
           <stop offset="55%" stopColor="#ff5101" />
           <stop offset="100%" stopColor="#c73900" />
         </radialGradient>
@@ -371,62 +352,56 @@ function OrbitFigure() {
 
       {rings.map((ring) => (
         <circle
-          key={ring.r}
+          key={`o-${ring.r}`}
           cx={cx}
           cy={cy}
           r={ring.r}
           fill="none"
           stroke="#ff5101"
-          strokeOpacity={0.18}
+          strokeOpacity={0.2}
           strokeWidth="1"
         />
       ))}
 
-      {rings.map((ring) =>
-        Array.from({ length: ring.nodes }, (_, i) => {
-          // Deterministic placement — no randomness, so the figure is identical
-          // on the server and in the browser and never hydrates mismatched.
-          const angle = (i / ring.nodes) * Math.PI * 2 + ring.seed;
-          const x = cx + Math.cos(angle) * ring.r;
-          const y = cy + Math.sin(angle) * ring.r;
-          const opacity = 0.35 + 0.65 * ((Math.sin(angle * 3 + ring.seed) + 1) / 2);
-          return (
-            <circle
-              key={`${ring.r}-${i}`}
-              cx={x}
-              cy={y}
-              r={ring.size}
-              fill="#ff5101"
-              fillOpacity={opacity}
-            />
-          );
-        }),
-      )}
+      {rings.map((ring) => (
+        <g key={`n-${ring.r}`} className={ring.cls}>
+          {Array.from({ length: ring.nodes }, (_, i) => {
+            const angle = (i / ring.nodes) * Math.PI * 2 + ring.seed;
+            const x = cx + Math.cos(angle) * ring.r;
+            const y = cy + Math.sin(angle) * ring.r;
+            const opacity = 0.35 + 0.65 * ((Math.sin(angle * 3 + ring.seed) + 1) / 2);
+            return (
+              <circle key={i} cx={x} cy={y} r={ring.size} fill="#ff5101" fillOpacity={opacity} />
+            );
+          })}
+        </g>
+      ))}
 
-      {rings[0] &&
-        Array.from({ length: rings[0].nodes }, (_, i) => {
+      <g className="ring-a">
+        {Array.from({ length: rings[0].nodes }, (_, i) => {
           const angle = (i / rings[0].nodes) * Math.PI * 2 + rings[0].seed;
           return (
             <line
-              key={`spoke-${i}`}
+              key={i}
               x1={cx + Math.cos(angle) * 26}
               y1={cy + Math.sin(angle) * 26}
               x2={cx + Math.cos(angle) * (rings[0].r - 8)}
               y2={cy + Math.sin(angle) * (rings[0].r - 8)}
               stroke="#ff5101"
-              strokeOpacity="0.28"
+              strokeOpacity="0.3"
               strokeWidth="1"
             />
           );
         })}
+      </g>
 
-      <circle cx={cx} cy={cy} r="46" fill="#ff5101" fillOpacity="0.12" />
-      <circle cx={cx} cy={cy} r="20" fill="url(#core)" />
+      <circle className="core-halo" cx={cx} cy={cy} r="46" fill="#ff5101" fillOpacity="0.16" />
+      <circle cx={cx} cy={cy} r="20" fill="url(#wc-core)" />
     </svg>
   );
 }
 
-/** Dot artwork for the cards, in the manner of the reference design. */
+/** Dot artwork for the cards. */
 function BurstIcon() {
   const dots: Array<{ x: number; y: number; r: number }> = [];
   [
@@ -440,10 +415,10 @@ function BurstIcon() {
     }),
   );
   return (
-    <svg width="68" height="68" viewBox="0 0 68 68" aria-hidden="true">
-      <circle cx="34" cy="34" r="2.4" fill="#ff5101" />
+    <svg className="icon" width="68" height="68" viewBox="0 0 68 68" aria-hidden="true">
+      <circle cx="34" cy="34" r="2.4" fill="currentColor" />
       {dots.map((d, i) => (
-        <circle key={i} cx={d.x} cy={d.y} r={d.r} fill="#ff5101" />
+        <circle key={i} cx={d.x} cy={d.y} r={d.r} fill="currentColor" />
       ))}
     </svg>
   );
@@ -452,11 +427,17 @@ function BurstIcon() {
 function RingIcon() {
   const n = 26;
   return (
-    <svg width="68" height="68" viewBox="0 0 68 68" aria-hidden="true">
+    <svg className="icon" width="68" height="68" viewBox="0 0 68 68" aria-hidden="true">
       {Array.from({ length: n }, (_, i) => {
         const a = (i / n) * Math.PI * 2;
         return (
-          <circle key={i} cx={34 + Math.cos(a) * 27} cy={34 + Math.sin(a) * 27} r="2.4" fill="#ff5101" />
+          <circle
+            key={i}
+            cx={34 + Math.cos(a) * 27}
+            cy={34 + Math.sin(a) * 27}
+            r="2.4"
+            fill="currentColor"
+          />
         );
       })}
     </svg>
@@ -469,16 +450,16 @@ function GridIcon() {
   const span = 4;
   for (let row = -span; row <= span; row++) {
     for (let col = -span; col <= span; col++) {
-      // Diamond mask: keep the cells inside the rotated square.
+      // Diamond mask: keep only the cells inside the rotated square.
       if (Math.abs(row) + Math.abs(col) <= span) {
         dots.push({ x: 34 + col * step, y: 34 + row * step });
       }
     }
   }
   return (
-    <svg width="68" height="68" viewBox="0 0 68 68" aria-hidden="true">
+    <svg className="icon" width="68" height="68" viewBox="0 0 68 68" aria-hidden="true">
       {dots.map((d, i) => (
-        <circle key={i} cx={d.x} cy={d.y} r="2.2" fill="#ff5101" />
+        <circle key={i} cx={d.x} cy={d.y} r="2.2" fill="currentColor" />
       ))}
     </svg>
   );
@@ -535,7 +516,7 @@ function PropagationDiagram() {
         </text>
       ))}
 
-      {edges.map(([from, to]) => {
+      {edges.map(([from, to], i) => {
         const f = at(from);
         const t = at(to);
         const mid = (f.x + t.x) / 2;
@@ -543,6 +524,7 @@ function PropagationDiagram() {
           <path
             key={`${from}-${to}`}
             className="dg-edge"
+            style={{ animationDelay: `${i * 110}ms` }}
             d={`M ${f.x + f.r} ${f.y} C ${mid} ${f.y}, ${mid} ${t.y}, ${t.x - t.r} ${t.y}`}
           />
         );

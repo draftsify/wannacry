@@ -1,4 +1,4 @@
-# Patient Zero
+# WannaCry
 
 Main Token trading fees fund a treasury. Each epoch, a share is allocated to
 holders from a frozen snapshot. Holders direct their own allocation — back into

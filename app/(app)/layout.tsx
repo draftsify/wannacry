@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ReactNode } from "react";
+import { WannaCryMark } from "@/components/WannaCryMark";
 
 /** The explorer shell: dark, dense, monospaced. */
 export default function AppLayout({ children }: { children: ReactNode }) {
@@ -8,7 +9,8 @@ export default function AppLayout({ children }: { children: ReactNode }) {
       <header className="top">
         <div className="inner">
           <Link href="/" className="brand">
-            <b>PATIENT ZERO</b>
+            <WannaCryMark size={22} />
+            <b>WANNACRY</b>
             <span>allocation network</span>
           </Link>
           <nav className="links">

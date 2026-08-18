@@ -1,4 +1,4 @@
-# Patient Zero — architecture
+# WannaCry — architecture
 
 ## 1. What the system is
 

@@ -1,27 +1,25 @@
 /*
- * The marketing surface.
+ * The marketing surface — light, centred, animated.
  *
- * Visual language: near-black ground, a single vivid orange used only for the
- * things that matter, Inter at tight tracking, pill actions and 16px cards.
- * The explorer at /network stays monospaced and dense — this page is the front
- * door, not the instrument panel.
+ * Warm-neutral grey ground rather than white: the mark and the accent are a
+ * saturated orange, and pure white around them vibrates. Everything is centred
+ * on a single axis, so the page reads as one column falling down the screen.
  *
- * It renders with no database and no RPC, so it is always up even when the
- * indexer is not.
+ * Renders with no database and no RPC, so it stays up when the indexer is not.
  */
 
 .landing {
-  --bg: #0a0a0a;
-  --panel: #171717;
-  --panel-2: #1c1c1c;
-  --border: rgba(255, 255, 255, 0.16);
-  --border-soft: rgba(255, 255, 255, 0.08);
-  --line: #332f2d;
-  --text: #ffffff;
-  --text-2: #bebebe;
-  --text-3: #7d7a76;
+  --bg: #e9e8e6;
+  --bg-2: #f2f1ef;
+  --panel: #ffffff;
+  --border: rgba(16, 15, 14, 0.1);
+  --border-strong: rgba(16, 15, 14, 0.2);
+  --text: #100f0e;
+  --text-2: #4d4a47;
+  --text-3: #827e7a;
   --accent: #ff5101;
-  --accent-soft: rgba(255, 81, 1, 0.12);
+  --accent-deep: #d64100;
+  --accent-soft: rgba(255, 81, 1, 0.1);
 
   min-height: 100vh;
   background: var(--bg);
@@ -32,12 +30,13 @@
   letter-spacing: -0.01em;
   -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
+  text-align: center;
 }
 
-/* The explorer's stylesheet paints the body; without this the overscroll area
-   above and below the page flashes a different black. */
+/* The explorer's stylesheet paints the body dark; without this the overscroll
+   area above and below the page flashes near-black. */
 body:has(.landing) {
-  background: #0a0a0a;
+  background: #e9e8e6;
 }
 
 .landing a {
@@ -47,9 +46,89 @@ body:has(.landing) {
 }
 
 .landing .wrap {
-  max-width: 1180px;
+  max-width: 1120px;
   margin: 0 auto;
   padding: 0 20px;
+}
+
+/* Motion ------------------------------------------------------------------ */
+
+.landing .reveal {
+  opacity: 0;
+  transform: translateY(22px);
+  transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1), transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: opacity, transform;
+}
+
+.landing .reveal.is-shown {
+  opacity: 1;
+  transform: none;
+}
+
+@keyframes pz-rise {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes pz-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes pz-spin-back {
+  to {
+    transform: rotate(-360deg);
+  }
+}
+
+@keyframes pz-pulse {
+  0%,
+  100% {
+    opacity: 0.5;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.06);
+  }
+}
+
+@keyframes pz-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+.landing .rise {
+  animation: pz-rise 0.85s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* Everything decorative stops for anyone who asked motion to stop. Content
+   animations resolve to their final state rather than being skipped. */
+@media (prefers-reduced-motion: reduce) {
+  .landing *,
+  .landing *::before,
+  .landing *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+
+  .landing .reveal {
+    opacity: 1;
+    transform: none;
+  }
 }
 
 /* Nav --------------------------------------------------------------------- */
@@ -58,33 +137,60 @@ body:has(.landing) {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 20px 0;
-  gap: 20px;
+  padding: 18px 0;
+  gap: 16px;
 }
 
 .landing .logo {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 11px;
-  font-size: 21px;
+  gap: 10px;
+  font-size: 20px;
   font-weight: 600;
-  letter-spacing: -0.03em;
+  letter-spacing: -0.035em;
+  color: var(--text);
+}
+
+.landing .logo svg {
+  color: var(--accent);
+  animation: pz-float 5s ease-in-out infinite;
 }
 
 .landing .nav-links {
   display: flex;
   align-items: center;
-  gap: 30px;
-  font-size: 16px;
+  gap: 28px;
+  font-size: 15.5px;
   font-weight: 500;
   color: var(--text-2);
+}
+
+.landing .nav-links a {
+  position: relative;
+}
+
+.landing .nav-links a::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -4px;
+  width: 100%;
+  height: 1.5px;
+  background: var(--accent);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .landing .nav-links a:hover {
   color: var(--text);
 }
 
-@media (max-width: 820px) {
+.landing .nav-links a:hover::after {
+  transform: scaleX(1);
+}
+
+@media (max-width: 900px) {
   .landing .nav-mid {
     display: none;
   }
@@ -97,14 +203,20 @@ body:has(.landing) {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  padding: 12px 20px;
+  padding: 12px 22px;
   border-radius: 58px;
   font-size: 14px;
   font-weight: 500;
   letter-spacing: -0.2px;
   border: 1px solid transparent;
-  transition: background-color 0.16s ease, border-color 0.16s ease, color 0.16s ease;
+  cursor: pointer;
+  transition: background-color 0.18s ease, border-color 0.18s ease, color 0.18s ease,
+    transform 0.18s cubic-bezier(0.22, 1, 0.36, 1);
   white-space: nowrap;
+}
+
+.landing .btn:hover {
+  transform: translateY(-1.5px);
 }
 
 .landing .btn-primary {
@@ -113,80 +225,114 @@ body:has(.landing) {
 }
 
 .landing .btn-primary:hover {
-  background: #ff6a26;
+  background: var(--accent-deep);
 }
 
 .landing .btn-outline {
-  border-color: #f6f7f9;
-  color: #fff;
-  background: transparent;
+  border-color: var(--border-strong);
+  color: var(--text);
 }
 
 .landing .btn-outline:hover {
-  background: #fff;
-  color: #0a0a0a;
+  border-color: var(--text);
+  background: rgba(16, 15, 14, 0.04);
 }
 
-.landing .btn-light {
-  background: #fff;
-  color: #0a0a0a;
+/* Wallet adapter, restyled for the light surface ---------------------------- */
+
+.landing .connect-slot.is-nav {
+  display: inline-flex;
+  min-width: 150px;
+  min-height: 42px;
+  justify-content: flex-end;
 }
 
-.landing .btn-light:hover {
-  background: #e9e9e9;
+.landing .wallet-adapter-button {
+  font-family: inherit !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  letter-spacing: -0.2px;
+  height: 42px !important;
+  line-height: 42px !important;
+  padding: 0 22px !important;
+  border-radius: 58px !important;
+  background: var(--accent) !important;
+  border: 1px solid var(--accent) !important;
+  color: #fff !important;
+  transition: background-color 0.18s ease, transform 0.18s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.landing .wallet-adapter-button:not([disabled]):hover {
+  background: var(--accent-deep) !important;
+  border-color: var(--accent-deep) !important;
+  transform: translateY(-1.5px);
+}
+
+.landing .wallet-adapter-button-start-icon,
+.landing .wallet-adapter-button-end-icon {
+  display: none !important;
+}
+
+.landing .connect-hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.landing .connect-status {
+  margin: 16px 0 0;
+  font-size: 13.5px;
+  color: var(--text-3);
 }
 
 /* Hero -------------------------------------------------------------------- */
 
 .landing .hero {
   position: relative;
-  text-align: center;
-  padding: 92px 0 0;
+  padding: 76px 0 0;
+}
+
+.landing .hero-mark {
+  color: var(--accent);
+  margin-bottom: 26px;
+  animation: pz-rise 0.85s cubic-bezier(0.22, 1, 0.36, 1) both, pz-float 6s ease-in-out 0.9s infinite;
 }
 
 .landing h1 {
-  font-size: clamp(38px, 5.6vw, 62px);
+  font-size: clamp(40px, 6vw, 68px);
   font-weight: 500;
-  line-height: 1.1;
-  letter-spacing: -0.035em;
+  line-height: 1.08;
+  letter-spacing: -0.04em;
   margin: 0 0 20px;
 }
 
 .landing h1 .dim {
-  color: var(--text-2);
+  color: var(--text-3);
 }
 
 .landing .lede {
-  font-size: 16.5px;
+  font-size: 17px;
   line-height: 1.62;
   color: var(--text-2);
-  max-width: 620px;
-  margin: 0 auto 30px;
+  max-width: 610px;
+  margin: 0 auto 32px;
 }
 
 .landing .cta {
   display: flex;
   gap: 12px;
   justify-content: center;
+  align-items: center;
   flex-wrap: wrap;
 }
 
-.landing .hero-note {
-  margin-top: 20px;
-  font-size: 13.5px;
-  color: var(--text-3);
-}
-
-/* The orbit figure. Concentric rings of real propagation vocabulary rather than
-   a decorative globe: the centre is Patient Zero and the rings are generations. */
+/* Orbit figure. Concentric generation rings radiating from Patient Zero, which
+   is the actual model rather than decoration. */
 .landing .orbit {
   position: relative;
-  margin: 44px auto 0;
+  margin: 48px auto -170px;
   width: 100%;
-  max-width: 900px;
-  /* Bleed the lower half off-screen the way the reference does, so the figure
-     reads as something continuing rather than a contained illustration. */
-  margin-bottom: -180px;
+  max-width: 880px;
   mask-image: radial-gradient(circle at 50% 42%, #000 55%, transparent 76%);
   -webkit-mask-image: radial-gradient(circle at 50% 42%, #000 55%, transparent 76%);
 }
@@ -197,29 +343,49 @@ body:has(.landing) {
   height: auto;
 }
 
+.landing .orbit .ring-a {
+  transform-origin: 450px 430px;
+  animation: pz-spin 74s linear infinite;
+}
+
+.landing .orbit .ring-b {
+  transform-origin: 450px 430px;
+  animation: pz-spin-back 108s linear infinite;
+}
+
+.landing .orbit .ring-c {
+  transform-origin: 450px 430px;
+  animation: pz-spin 150s linear infinite;
+}
+
+.landing .orbit .core-halo {
+  transform-origin: 450px 430px;
+  animation: pz-pulse 3.6s ease-in-out infinite;
+}
+
 .landing .glow {
   position: absolute;
   left: 50%;
   top: 78%;
-  width: min(1100px, 130vw);
-  height: 620px;
+  width: min(1000px, 128vw);
+  height: 560px;
   transform: translate(-50%, -50%);
-  background: radial-gradient(circle, rgba(255, 81, 1, 0.34) 0%, rgba(255, 81, 1, 0.08) 38%, transparent 66%);
+  background: radial-gradient(circle, rgba(255, 81, 1, 0.2) 0%, rgba(255, 81, 1, 0.06) 40%, transparent 68%);
   pointer-events: none;
-  z-index: -1;
+  z-index: 0;
 }
 
 /* Strip ------------------------------------------------------------------- */
 
 .landing .strip {
-  border-top: 1px solid var(--border-soft);
-  border-bottom: 1px solid var(--border-soft);
-  margin-top: 200px;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  margin-top: 196px;
   padding: 22px 0;
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 14px 40px;
+  gap: 14px 38px;
   font-size: 14px;
   color: var(--text-3);
 }
@@ -241,67 +407,68 @@ body:has(.landing) {
 /* Sections ---------------------------------------------------------------- */
 
 .landing section {
-  padding: 84px 0;
+  padding: 82px 0;
 }
 
 .landing h2 {
   font-size: clamp(28px, 3.8vw, 42px);
   font-weight: 500;
   line-height: 1.14;
-  letter-spacing: -0.035em;
+  letter-spacing: -0.038em;
   margin: 0 0 18px;
 }
 
 .landing h2 .dim {
-  color: var(--text-2);
+  color: var(--text-3);
 }
 
 .landing h3 {
-  font-size: 19px;
+  font-size: 18.5px;
   font-weight: 500;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.025em;
   margin: 0 0 8px;
 }
 
 .landing p {
-  margin: 0 0 18px;
+  margin: 0 auto 18px;
   color: var(--text-2);
   max-width: 660px;
   font-size: 16px;
-}
-
-.landing .center {
-  text-align: center;
-}
-
-.landing .center p {
-  margin-left: auto;
-  margin-right: auto;
 }
 
 /* Cards ------------------------------------------------------------------- */
 
 .landing .cards {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(268px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(272px, 1fr));
   gap: 18px;
-  margin-top: 40px;
+  margin-top: 42px;
 }
 
 .landing .card {
   background: var(--panel);
-  border: 1px solid var(--border-soft);
-  border-radius: 16px;
-  padding: 24px;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 30px 24px 28px;
   display: flex;
   flex-direction: column;
+  align-items: center;
+  transition: transform 0.32s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.32s ease;
+}
+
+.landing .card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 14px 34px rgba(16, 15, 14, 0.09);
 }
 
 .landing .card .icon {
-  height: 96px;
-  display: flex;
-  align-items: center;
-  margin-bottom: 44px;
+  color: var(--accent);
+  margin-bottom: 26px;
+  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.landing .card:hover .icon {
+  transform: rotate(45deg);
 }
 
 .landing .card p {
@@ -313,12 +480,9 @@ body:has(.landing) {
 
 .landing .card .note {
   margin-top: 18px;
-  font-size: 14px;
+  font-size: 13.5px;
   font-weight: 500;
   color: var(--accent);
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
 }
 
 /* Flow -------------------------------------------------------------------- */
@@ -327,37 +491,40 @@ body:has(.landing) {
   counter-reset: step;
   list-style: none;
   padding: 0;
-  margin: 40px 0 0;
+  margin: 42px auto 0;
+  max-width: 760px;
   display: grid;
   gap: 2px;
 }
 
 .landing .flow li {
   counter-increment: step;
-  display: grid;
-  grid-template-columns: 40px 1fr;
-  gap: 14px;
-  padding: 15px 20px;
+  padding: 16px 22px;
   background: var(--panel);
-  align-items: baseline;
   font-size: 15.5px;
   color: var(--text-2);
+  transition: background-color 0.22s ease;
+}
+
+.landing .flow li:hover {
+  background: var(--bg-2);
 }
 
 .landing .flow li:first-child {
-  border-radius: 14px 14px 0 0;
+  border-radius: 16px 16px 0 0;
 }
 
 .landing .flow li:last-child {
-  border-radius: 0 0 14px 14px;
+  border-radius: 0 0 16px 16px;
 }
 
 .landing .flow li::before {
   content: "0" counter(step);
   color: var(--accent);
   font-size: 13px;
-  font-weight: 500;
+  font-weight: 600;
   letter-spacing: 0;
+  margin-right: 12px;
 }
 
 .landing .flow b {
@@ -368,10 +535,10 @@ body:has(.landing) {
 /* Diagram ----------------------------------------------------------------- */
 
 .landing .figure {
-  margin: 40px 0 0;
+  margin: 42px auto 0;
   background: var(--panel);
-  border: 1px solid var(--border-soft);
-  border-radius: 16px;
+  border: 1px solid var(--border);
+  border-radius: 18px;
   padding: 30px 20px 20px;
   overflow-x: auto;
 }
@@ -381,8 +548,8 @@ body:has(.landing) {
   margin: 0 auto;
 }
 
-/* The diagram takes its colours from here rather than from hardcoded
-   attributes, so this palette block stays the only place a theme is defined. */
+/* The diagram takes its colours from here rather than hardcoded attributes,
+   so this palette block stays the only place a theme is defined. */
 .landing .dg-gen {
   fill: var(--text-3);
   font-size: 11px;
@@ -391,13 +558,25 @@ body:has(.landing) {
 
 .landing .dg-edge {
   fill: none;
-  stroke: #3a3735;
+  stroke: rgba(16, 15, 14, 0.18);
   stroke-width: 1.5;
+  stroke-dasharray: 220;
+  stroke-dashoffset: 220;
+}
+
+.landing .is-shown .dg-edge {
+  animation: pz-draw 1.1s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@keyframes pz-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
 }
 
 .landing .dg-node {
-  fill: var(--panel-2);
-  stroke: #46423f;
+  fill: var(--panel);
+  stroke: rgba(16, 15, 14, 0.24);
   stroke-width: 1.5;
 }
 
@@ -417,7 +596,6 @@ body:has(.landing) {
 }
 
 .landing .figcaption {
-  text-align: center;
   font-size: 13px;
   color: var(--text-3);
   margin: 16px auto 0;
@@ -427,22 +605,28 @@ body:has(.landing) {
 /* Definitions ------------------------------------------------------------- */
 
 .landing .defs {
-  margin-top: 36px;
-  border-top: 1px solid var(--border-soft);
+  margin: 40px auto 0;
+  max-width: 720px;
+  display: grid;
+  gap: 1px;
+  background: var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid var(--border);
 }
 
 .landing .def {
-  display: grid;
-  grid-template-columns: 200px 1fr;
-  gap: 24px;
-  padding: 18px 0;
-  border-bottom: 1px solid var(--border-soft);
-  align-items: baseline;
+  background: var(--panel);
+  padding: 20px 22px;
 }
 
 .landing .def dt {
-  font-weight: 500;
-  font-size: 15.5px;
+  font-weight: 600;
+  font-size: 13px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 5px;
 }
 
 .landing .def dd {
@@ -451,48 +635,50 @@ body:has(.landing) {
   font-size: 15.5px;
 }
 
-@media (max-width: 640px) {
-  .landing .def {
-    grid-template-columns: 1fr;
-    gap: 4px;
-  }
-}
-
 /* Honest limits ----------------------------------------------------------- */
 
 .landing .limits {
   background: var(--panel);
-  border: 1px solid var(--border-soft);
-  border-left: 2px solid var(--accent);
-  border-radius: 4px 16px 16px 4px;
-  padding: 28px 30px;
-  margin-top: 36px;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 30px 28px;
+  margin: 40px auto 0;
+  max-width: 760px;
 }
 
 .landing .limits ul {
   margin: 0;
-  padding-left: 20px;
+  padding: 0;
+  list-style: none;
   color: var(--text-2);
   font-size: 15.5px;
 }
 
 .landing .limits li {
-  margin-bottom: 12px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.landing .limits li:first-child {
+  padding-top: 0;
 }
 
 .landing .limits li:last-child {
-  margin-bottom: 0;
+  border-bottom: 0;
+  padding-bottom: 0;
 }
 
 .landing .limits b {
   color: var(--text);
-  font-weight: 500;
+  font-weight: 600;
+  display: block;
+  margin-bottom: 3px;
 }
 
 .landing code {
   font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   font-size: 0.88em;
-  background: var(--panel-2);
+  background: var(--bg-2);
   color: var(--text);
   padding: 2px 6px;
   border-radius: 5px;
@@ -503,9 +689,8 @@ body:has(.landing) {
 .landing .cta-block {
   position: relative;
   background: var(--accent);
-  border-radius: 16px;
-  padding: 88px 28px;
-  text-align: center;
+  border-radius: 20px;
+  padding: 84px 28px;
   overflow: hidden;
   margin: 0 0 84px;
 }
@@ -518,17 +703,41 @@ body:has(.landing) {
 }
 
 .landing .cta-block p {
-  max-width: 560px;
-  margin: 0 auto 26px;
+  max-width: 540px;
+  margin: 0 auto 28px;
+  color: rgba(255, 255, 255, 0.88);
 }
 
-.landing .cta-block .btn {
+.landing .cta-block .connect-hero {
   position: relative;
   z-index: 1;
 }
 
-/* Circuit traces, echoing the reference's corner artwork. Purely decorative
-   and hidden from assistive tech. */
+.landing .cta-block .connect-status {
+  color: rgba(255, 255, 255, 0.82);
+}
+
+.landing .cta-block .wallet-adapter-button {
+  background: #fff !important;
+  border-color: #fff !important;
+  color: #16110e !important;
+}
+
+.landing .cta-block .wallet-adapter-button:not([disabled]):hover {
+  background: #f0efed !important;
+  border-color: #f0efed !important;
+}
+
+.landing .cta-block .btn-primary {
+  background: rgba(0, 0, 0, 0.24);
+  color: #fff;
+}
+
+.landing .cta-block .btn-primary:hover {
+  background: rgba(0, 0, 0, 0.34);
+}
+
+/* Circuit traces. Purely decorative and hidden from assistive tech. */
 .landing .cta-block .traces {
   position: absolute;
   top: 0;
@@ -536,19 +745,26 @@ body:has(.landing) {
   width: 100%;
   height: 100%;
   pointer-events: none;
-  opacity: 0.42;
+  opacity: 0.4;
 }
 
 .landing .cta-block .traces path {
   fill: none;
   stroke: #fff;
   stroke-width: 1.4;
+  stroke-dasharray: 620;
+  stroke-dashoffset: 620;
+  animation: pz-draw 2.4s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.landing .cta-block .traces path:nth-child(even) {
+  animation-delay: 0.25s;
 }
 
 /* Footer ------------------------------------------------------------------ */
 
 .landing footer {
-  border-top: 1px solid var(--border-soft);
+  border-top: 1px solid var(--border);
   padding: 34px 0 60px;
   color: var(--text-3);
   font-size: 14px;
@@ -556,8 +772,8 @@ body:has(.landing) {
 
 .landing footer .row {
   display: flex;
-  justify-content: space-between;
-  gap: 20px;
+  justify-content: center;
+  gap: 10px 24px;
   flex-wrap: wrap;
 }
 
@@ -566,9 +782,9 @@ body:has(.landing) {
 }
 
 .landing .disclaimer {
-  margin-top: 24px;
+  margin: 22px auto 0;
   font-size: 12.5px;
   line-height: 1.6;
-  color: #6a6763;
-  max-width: 780px;
+  color: #8d8985;
+  max-width: 720px;
 }
