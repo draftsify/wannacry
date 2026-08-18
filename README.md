@@ -77,9 +77,18 @@ testing.
 
 ## Cron
 
-`vercel.json` schedules two jobs. Both accept GET with an
+Two jobs, both accepting POST (and GET, for Vercel) with an
 `Authorization: Bearer $CRON_SECRET` header.
 
-- `/api/cron/reconcile` every 2 min — releases abandoned reservations, settles or
-  fails in-flight transactions from chain state.
-- `/api/cron/epoch` hourly — closes an expired epoch and snapshots the next.
+| Job | Cadence | Driven by |
+|---|---|---|
+| `/api/cron/epoch` | daily | Vercel cron (`vercel.json`) |
+| `/api/cron/reconcile` | every 5 min | GitHub Actions (`.github/workflows/reconcile.yml`) |
+
+Reconciliation runs from GitHub Actions because Vercel's Hobby plan caps cron
+jobs at once per day, and once per day is far too slow for a job that releases
+allocation held by unsigned prepares. On a Pro plan, move it back into
+`vercel.json` at `*/2 * * * *` and delete the workflow.
+
+The workflow needs two repository secrets: `APP_URL` (no trailing slash) and
+`CRON_SECRET` (matching the Vercel environment variable).

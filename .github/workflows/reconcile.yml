@@ -1,0 +1,32 @@
+name: reconcile
+
+# Vercel's Hobby plan caps cron jobs at once per day, which is far too slow for
+# reconciliation: it is the job that releases allocation held by prepares the
+# user never signed, and that settles transactions whose confirmation the request
+# handler did not see. Until the project is on Pro, GitHub Actions drives it.
+#
+# Scheduled workflows fire at roughly this cadence and can be delayed under load.
+# That is acceptable here — reconcile is a safety net, not a critical path, and
+# every operation it performs is idempotent, so a late or duplicated run is
+# harmless.
+
+on:
+  schedule:
+    - cron: "*/5 * * * *"
+  workflow_dispatch:
+
+jobs:
+  reconcile:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger reconciliation
+        run: |
+          code=$(curl -sS -o /tmp/body.json -w '%{http_code}' \
+            -X POST "${{ secrets.APP_URL }}/api/cron/reconcile" \
+            -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}")
+          echo "HTTP $code"
+          cat /tmp/body.json
+          echo
+          # A non-2xx here means allocation may be stuck reserved, so fail loudly
+          # rather than letting a silent red-free log hide it.
+          test "$code" -ge 200 && test "$code" -lt 300
