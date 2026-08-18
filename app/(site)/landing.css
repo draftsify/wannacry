@@ -1,0 +1,411 @@
+/*
+ * The marketing surface. Opposite palette to the explorer on purpose: warm
+ * paper, a serif voice, one clay accent, and a lot of air. The explorer is for
+ * reading data quickly; this page is for reading sentences slowly.
+ *
+ * It renders with no database and no RPC, so it is always up even when the
+ * indexer is not.
+ */
+
+.landing {
+  --paper: #faf9f5;
+  --paper-2: #f0eee6;
+  --paper-3: #e8e5db;
+  --ink: #191917;
+  --ink-2: #3d3d3a;
+  --ink-3: #6b6a64;
+  --rule: #dfdcd1;
+  --clay: #cc785c;
+  --clay-deep: #a8543a;
+
+  min-height: 100vh;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: ui-sans-serif, -apple-system, "Segoe UI", Inter, system-ui, sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Body carries the explorer's dark background by default; without this the
+   overscroll area above and below the page flashes near-black. */
+body:has(.landing) {
+  background: #faf9f5;
+}
+
+.landing a {
+  color: inherit;
+  border-bottom: 0;
+}
+
+.landing .wrap {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 0 28px;
+}
+
+.landing .narrow {
+  max-width: 720px;
+}
+
+/* Nav --------------------------------------------------------------------- */
+
+.landing .nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 22px 0;
+  gap: 20px;
+}
+
+.landing .logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+
+.landing .logo .dot {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--clay);
+  flex: none;
+}
+
+.landing .nav-links {
+  display: flex;
+  align-items: center;
+  gap: 26px;
+  font-size: 14.5px;
+  color: var(--ink-2);
+}
+
+.landing .nav-links a:hover {
+  color: var(--clay-deep);
+}
+
+/* Buttons ----------------------------------------------------------------- */
+
+.landing .btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 20px;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 500;
+  border: 1px solid transparent;
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+  white-space: nowrap;
+}
+
+.landing .btn-primary {
+  background: var(--clay);
+  color: #fff;
+}
+
+.landing .btn-primary:hover {
+  background: var(--clay-deep);
+}
+
+.landing .btn-ghost {
+  border-color: var(--rule);
+  color: var(--ink);
+  background: transparent;
+}
+
+.landing .btn-ghost:hover {
+  background: var(--paper-2);
+  border-color: #cfcbbd;
+}
+
+/* Hero -------------------------------------------------------------------- */
+
+.landing .hero {
+  padding: 84px 0 64px;
+  text-align: center;
+}
+
+.landing .eyebrow {
+  display: inline-block;
+  font-size: 12.5px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  padding: 5px 14px;
+  margin-bottom: 30px;
+}
+
+.landing h1 {
+  font-family: ui-serif, Georgia, "Iowan Old Style", "Palatino Linotype", serif;
+  font-weight: 400;
+  font-size: clamp(40px, 6.4vw, 68px);
+  line-height: 1.06;
+  letter-spacing: -0.02em;
+  margin: 0 0 24px;
+  color: var(--ink);
+}
+
+.landing h1 em {
+  font-style: italic;
+  color: var(--clay-deep);
+}
+
+.landing .lede {
+  font-size: clamp(17px, 2.1vw, 19.5px);
+  line-height: 1.62;
+  color: var(--ink-2);
+  max-width: 620px;
+  margin: 0 auto 36px;
+}
+
+.landing .cta {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.landing .hero-note {
+  margin-top: 22px;
+  font-size: 13.5px;
+  color: var(--ink-3);
+}
+
+/* Sections ---------------------------------------------------------------- */
+
+.landing section {
+  padding: 60px 0;
+}
+
+.landing section + section {
+  border-top: 1px solid var(--rule);
+}
+
+.landing h2 {
+  font-family: ui-serif, Georgia, "Iowan Old Style", "Palatino Linotype", serif;
+  font-weight: 400;
+  font-size: clamp(27px, 3.4vw, 38px);
+  line-height: 1.18;
+  letter-spacing: -0.015em;
+  margin: 0 0 16px;
+}
+
+.landing h3 {
+  font-size: 16.5px;
+  font-weight: 600;
+  margin: 0 0 7px;
+  letter-spacing: -0.005em;
+}
+
+.landing p {
+  margin: 0 0 18px;
+  color: var(--ink-2);
+  max-width: 660px;
+}
+
+.landing .kicker {
+  font-size: 12.5px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--clay-deep);
+  margin-bottom: 14px;
+  font-weight: 500;
+}
+
+/* Cards ------------------------------------------------------------------- */
+
+.landing .cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(232px, 1fr));
+  gap: 16px;
+  margin-top: 32px;
+}
+
+.landing .card {
+  background: var(--paper-2);
+  border: 1px solid var(--rule);
+  border-radius: 14px;
+  padding: 22px;
+}
+
+.landing .card p {
+  margin: 0;
+  font-size: 14.5px;
+  color: var(--ink-3);
+  line-height: 1.55;
+}
+
+.landing .card .num {
+  font-family: ui-serif, Georgia, serif;
+  font-size: 20px;
+  color: var(--clay);
+  margin-bottom: 10px;
+}
+
+/* Definition list --------------------------------------------------------- */
+
+.landing .defs {
+  margin-top: 30px;
+  border-top: 1px solid var(--rule);
+}
+
+.landing .def {
+  display: grid;
+  grid-template-columns: 190px 1fr;
+  gap: 24px;
+  padding: 17px 0;
+  border-bottom: 1px solid var(--rule);
+  align-items: baseline;
+}
+
+.landing .def dt {
+  font-weight: 600;
+  font-size: 15px;
+}
+
+.landing .def dd {
+  margin: 0;
+  color: var(--ink-2);
+  font-size: 15px;
+}
+
+@media (max-width: 640px) {
+  .landing .def {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+}
+
+/* Diagram ----------------------------------------------------------------- */
+
+.landing .figure {
+  margin: 36px 0 0;
+  background: var(--paper-2);
+  border: 1px solid var(--rule);
+  border-radius: 16px;
+  padding: 28px 20px 20px;
+  overflow-x: auto;
+}
+
+.landing .figure svg {
+  display: block;
+  margin: 0 auto;
+}
+
+.landing .figcaption {
+  text-align: center;
+  font-size: 13px;
+  color: var(--ink-3);
+  margin-top: 14px;
+  max-width: none;
+}
+
+/* Flow list --------------------------------------------------------------- */
+
+.landing .flow {
+  counter-reset: step;
+  list-style: none;
+  padding: 0;
+  margin: 30px 0 0;
+  display: grid;
+  gap: 2px;
+}
+
+.landing .flow li {
+  counter-increment: step;
+  display: grid;
+  grid-template-columns: 34px 1fr;
+  gap: 14px;
+  padding: 13px 16px;
+  background: var(--paper-2);
+  align-items: baseline;
+  font-size: 15px;
+  color: var(--ink-2);
+}
+
+.landing .flow li:first-child {
+  border-radius: 12px 12px 0 0;
+}
+
+.landing .flow li:last-child {
+  border-radius: 0 0 12px 12px;
+}
+
+.landing .flow li::before {
+  content: counter(step);
+  font-family: ui-serif, Georgia, serif;
+  color: var(--clay);
+  font-size: 14px;
+}
+
+.landing .flow li b {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+/* Honest-limits block ----------------------------------------------------- */
+
+.landing .limits {
+  background: var(--paper-2);
+  border: 1px solid var(--rule);
+  border-left: 3px solid var(--clay);
+  border-radius: 4px 14px 14px 4px;
+  padding: 26px 28px;
+  margin-top: 30px;
+}
+
+.landing .limits ul {
+  margin: 0;
+  padding-left: 20px;
+  color: var(--ink-2);
+  font-size: 15px;
+}
+
+.landing .limits li {
+  margin-bottom: 10px;
+}
+
+.landing .limits li:last-child {
+  margin-bottom: 0;
+}
+
+.landing code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.88em;
+  background: var(--paper-3);
+  padding: 1.5px 5px;
+  border-radius: 4px;
+}
+
+/* Footer ------------------------------------------------------------------ */
+
+.landing footer {
+  border-top: 1px solid var(--rule);
+  padding: 34px 0 56px;
+  color: var(--ink-3);
+  font-size: 14px;
+}
+
+.landing footer .row {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.landing footer a:hover {
+  color: var(--clay-deep);
+}
+
+.landing .disclaimer {
+  margin-top: 22px;
+  font-size: 12.5px;
+  line-height: 1.6;
+  color: #8a887f;
+  max-width: 760px;
+}

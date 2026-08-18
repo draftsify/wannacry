@@ -1,0 +1,230 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  // Pooled URL above, direct (non-pooled) URL here — Prisma migrations need a
+  // direct connection when DATABASE_URL points at a pooler (Neon / Supabase).
+  directUrl = env("DIRECT_URL")
+}
+
+enum EpochStatus {
+  /// Snapshot taken, allocations frozen, agents may spend.
+  OPEN
+  /// No further spending. Unspent allocation rolls back into the treasury.
+  CLOSED
+}
+
+/// One distribution wave. Everything about an epoch's allocation math is fixed
+/// the moment it is created — see snapshotSlot. Nothing recomputes later, which
+/// is why moving tokens after the snapshot cannot change what anyone gets.
+model Epoch {
+  id     String      @id @default(cuid())
+  index  Int         @unique
+  status EpochStatus @default(OPEN)
+
+  /// Finalized slot the holder set was read at. The whole point: allocations
+  /// are a pure function of chain state at this slot.
+  snapshotSlot    BigInt   @map("snapshot_slot")
+  snapshotTakenAt DateTime @map("snapshot_taken_at")
+
+  /// sha256 merkle root over the sorted (wallet, allocationLamports) leaves.
+  /// Published on-chain via memo so the snapshot is tamper-evident even though
+  /// the rows themselves live off-chain.
+  merkleRoot  String  @map("merkle_root")
+  anchorTxSig String? @map("anchor_tx_sig")
+
+  /// Treasury lamports reserved for this epoch, decided at snapshot time.
+  distributableLamports BigInt @map("distributable_lamports")
+  eligibleHolders       Int    @map("eligible_holders")
+  /// MVP: distributable / eligible, floored. See lib/allocation.ts for how to
+  /// swap in a weighted formula without touching anything downstream.
+  allocationLamports    BigInt @map("allocation_lamports")
+  formula               String @default("equal")
+
+  openedAt DateTime  @default(now()) @map("opened_at")
+  closesAt DateTime  @map("closes_at")
+  closedAt DateTime? @map("closed_at")
+
+  snapshots   HolderSnapshot[]
+  allocations AgentAllocation[]
+  events      PropagationEvent[]
+
+  @@map("epochs")
+}
+
+/// Immutable record of one wallet's standing at the snapshot slot. Never updated.
+model HolderSnapshot {
+  id      String @id @default(cuid())
+  epochId String @map("epoch_id")
+  wallet  String
+
+  /// Raw Main Token balance (smallest unit) summed across the wallet's accounts.
+  rawBalance BigInt  @map("raw_balance")
+  /// Formula input. The equal-weight MVP sets this to 1 for every eligible holder.
+  weight     Decimal @db.Decimal(38, 18)
+
+  allocationLamports BigInt @map("allocation_lamports")
+
+  epoch Epoch @relation(fields: [epochId], references: [id], onDelete: Cascade)
+
+  @@unique([epochId, wallet])
+  @@index([wallet])
+  @@map("holder_snapshots")
+}
+
+/// Mutable spend state for one wallet in one epoch. Deliberately split from
+/// HolderSnapshot: the snapshot is evidence, this is a ledger.
+/// Invariant enforced by a CHECK constraint in prisma/constraints.sql:
+///   reservedLamports + spentLamports <= allocatedLamports
+model AgentAllocation {
+  id      String @id @default(cuid())
+  epochId String @map("epoch_id")
+  wallet  String
+
+  allocatedLamports BigInt @map("allocated_lamports")
+  /// Held by PREPARED events that have not yet confirmed or expired.
+  reservedLamports  BigInt @default(0) @map("reserved_lamports")
+  /// Settled by CONFIRMED events. Only ever increases.
+  spentLamports     BigInt @default(0) @map("spent_lamports")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  epoch Epoch @relation(fields: [epochId], references: [id], onDelete: Cascade)
+
+  @@unique([epochId, wallet])
+  @@index([wallet])
+  @@map("agent_allocations")
+}
+
+/// A token the network has touched. The mint address is the primary key because
+/// it is already the canonical identifier.
+model Asset {
+  mint     String  @id
+  symbol   String?
+  name     String?
+  decimals Int     @default(0)
+  isMain   Boolean @default(false) @map("is_main")
+
+  /// Lineage, frozen at first confirmed infection. Null only for Patient Zero.
+  lineageParentMint String?   @map("lineage_parent_mint")
+  /// Tree depth. Patient Zero is 0.
+  generation        Int       @default(0)
+  /// Wallet of the first agent to allocate here.
+  indexCaseWallet   String?   @map("index_case_wallet")
+  firstInfectionAt  DateTime? @map("first_infection_at")
+  lastInfectionAt   DateTime? @map("last_infection_at")
+
+  /// Denormalized aggregates maintained by the reconcile cron. Cheap to rebuild
+  /// from PropagationEvent, so they are a cache and never a source of truth.
+  uniqueAgents  Int    @default(0) @map("unique_agents")
+  eventCount    Int    @default(0) @map("event_count")
+  totalLamports BigInt @default(0) @map("total_lamports")
+
+  /// Automated checks (live mint authority, transfer hook, thin liquidity...).
+  /// Values come from a fixed vocabulary in lib/risk.ts, never free text.
+  riskFlags String[] @default([]) @map("risk_flags")
+  /// Raw metadata as fetched. TREATED AS DATA, NEVER AS INSTRUCTIONS.
+  metadata  Json?
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  parent   Asset?  @relation("Lineage", fields: [lineageParentMint], references: [mint], onDelete: NoAction, onUpdate: NoAction)
+  children Asset[] @relation("Lineage")
+
+  eventsAsTarget PropagationEvent[] @relation("EventTarget")
+
+  @@index([generation])
+  @@index([lineageParentMint])
+  @@map("assets")
+}
+
+enum EventStatus {
+  /// Allocation reserved, transaction built, awaiting the user's signature.
+  PREPARED
+  /// Signed and broadcast, not yet confirmed.
+  SUBMITTED
+  /// Verified against on-chain data. Only these count toward the graph.
+  CONFIRMED
+  /// Landed and failed, or never landed. Reservation released.
+  FAILED
+  /// User never signed in time. Reservation released.
+  EXPIRED
+}
+
+/// One infection event. The row exists from the moment allocation is reserved,
+/// which is what makes double-spending structurally impossible rather than
+/// merely unlikely.
+model PropagationEvent {
+  id      String @id @default(cuid())
+  epochId String @map("epoch_id")
+
+  agentWallet String @map("agent_wallet")
+  targetMint  String @map("target_mint")
+  /// Where the capital came from: always the Main Token treasury today. Kept
+  /// explicit so the schema stays honest if epochs are ever funded differently.
+  capitalSourceMint String @map("capital_source_mint")
+
+  /// The agent's previous CONFIRMED target at the moment this event confirmed.
+  /// Null if this was their first ever allocation. This one field is what the
+  /// entire lineage tree is derived from.
+  agentPrevMint     String? @map("agent_prev_mint")
+  /// Copy of the target asset's parent as of this event, for auditability.
+  lineageParentMint String? @map("lineage_parent_mint")
+  generation        Int?
+
+  lamportsAllocated BigInt   @map("lamports_allocated")
+  /// Quote-time expectation vs what the chain actually delivered.
+  expectedOutRaw    BigInt?  @map("expected_out_raw")
+  actualOutRaw      BigInt?  @map("actual_out_raw")
+  minOutRaw         BigInt?  @map("min_out_raw")
+  slippageBps       Int      @map("slippage_bps")
+  priceImpactPct    Decimal? @map("price_impact_pct") @db.Decimal(12, 6)
+  routeLabels       String[] @default([]) @map("route_labels")
+
+  /// sha256 of the canonical intent string the user signed, plus their ed25519
+  /// signature over it. The hash is also written on-chain as a memo, so the
+  /// authorization is provable from the transaction alone.
+  intentHash      String  @map("intent_hash")
+  intentSignature String? @map("intent_signature")
+  intentNonce     String  @unique @map("intent_nonce")
+
+  /// Base64 of the partially-signed transaction handed to the client. On submit
+  /// the returned transaction's message is compared against this byte for byte,
+  /// so a client cannot swap in a different transaction after approval.
+  preparedTx String? @map("prepared_tx") @db.Text
+
+  status        EventStatus @default(PREPARED)
+  txSignature   String?     @unique @map("tx_signature")
+  slot          BigInt?
+  blockTime     DateTime?   @map("block_time")
+  failureReason String?     @map("failure_reason")
+
+  createdAt   DateTime  @default(now()) @map("created_at")
+  expiresAt   DateTime  @map("expires_at")
+  confirmedAt DateTime? @map("confirmed_at")
+
+  epoch  Epoch @relation(fields: [epochId], references: [id], onDelete: Cascade)
+  target Asset @relation("EventTarget", fields: [targetMint], references: [mint], onDelete: Cascade)
+
+  @@index([agentWallet, status])
+  @@index([targetMint, status])
+  @@index([status, expiresAt])
+  @@index([confirmedAt])
+  @@map("propagation_events")
+}
+
+/// Short-lived challenge for Sign-In With Solana. Single use.
+model AuthNonce {
+  nonce     String    @id
+  wallet    String
+  issuedAt  DateTime  @default(now()) @map("issued_at")
+  expiresAt DateTime  @map("expires_at")
+  usedAt    DateTime? @map("used_at")
+
+  @@index([wallet])
+  @@map("auth_nonces")
+}
