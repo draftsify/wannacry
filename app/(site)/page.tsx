@@ -1,6 +1,9 @@
 import Link from "next/link";
 import type { Metadata, Viewport } from "next";
+import { Inter } from "next/font/google";
 import "./landing.css";
+
+const inter = Inter({ subsets: ["latin"], variable: "--font-sans", display: "swap" });
 
 export const metadata: Metadata = {
   title: "Patient Zero — capital that spreads by choice",
@@ -11,7 +14,7 @@ export const metadata: Metadata = {
 // Matches the page ground so mobile browser chrome does not frame a dark page
 // in a light bar.
 export const viewport: Viewport = {
-  themeColor: "#1f1e1d",
+  themeColor: "#0a0a0a",
   colorScheme: "dark",
 };
 
@@ -23,33 +26,32 @@ const REPO = "https://github.com/draftsify/patient-zero";
  */
 export default function LandingPage() {
   return (
-    <div className="landing">
+    <div className={`landing ${inter.variable}`}>
       <div className="wrap">
         <nav className="nav">
           <Link href="/" className="logo">
-            <span className="dot" aria-hidden="true" />
+            <Mark />
             Patient Zero
           </Link>
-          <div className="nav-links">
+          <div className="nav-links nav-mid">
             <Link href="/network">Network</Link>
             <Link href="/agent">Your agent</Link>
             <a href={REPO} target="_blank" rel="noreferrer">
               GitHub
             </a>
-            <Link href="/network" className="btn btn-primary">
-              Open the explorer
-            </Link>
           </div>
+          <Link href="/network" className="btn btn-outline">
+            Open the explorer
+          </Link>
         </nav>
       </div>
 
       <div className="wrap">
         <header className="hero">
-          <span className="eyebrow">Solana · epoch allocation protocol</span>
           <h1>
             Capital that spreads
             <br />
-            by <em>choice</em>, not by code.
+            <span className="dim">by choice, not by code</span>
           </h1>
           <p className="lede">
             Trading fees from one token fund a treasury. Each epoch, that treasury is allocated to
@@ -60,31 +62,100 @@ export default function LandingPage() {
             <Link href="/agent" className="btn btn-primary">
               Connect your wallet
             </Link>
-            <a href={REPO} className="btn btn-ghost" target="_blank" rel="noreferrer">
+            <a href={REPO} className="btn btn-outline" target="_blank" rel="noreferrer">
               Read the architecture
             </a>
           </div>
           <p className="hero-note">
             No autonomous spending. Every allocation needs two signatures from you.
           </p>
+
+          <div className="orbit">
+            <div className="glow" aria-hidden="true" />
+            <OrbitFigure />
+          </div>
         </header>
       </div>
 
       <div className="wrap">
+        <div className="strip">
+          <span>
+            <i />
+            Snapshot-frozen epochs
+          </span>
+          <span>
+            <i />
+            Two signatures per allocation
+          </span>
+          <span>
+            <i />
+            Graph derived from chain
+          </span>
+          <span>
+            <i />
+            Open source
+          </span>
+        </div>
+      </div>
+
+      <div className="wrap">
         <section>
-          <div className="kicker">The mechanism</div>
-          <h2>One token, then a network.</h2>
+          <h2>
+            One token,
+            <br />
+            <span className="dim">then a network</span>
+          </h2>
           <p>
             The Main Token is Patient Zero. Its fees accumulate in a treasury, and at each epoch a
             defined share becomes allocation capital for the holders in that epoch&apos;s snapshot.
             The allocation does not land in your wallet as free SOL — it lands in an agent that will
-            only spend it into a swap you authorize.
-          </p>
-          <p>
-            That single constraint is what makes the graph exist. Capital has to move somewhere to
-            move at all, and where it goes is a decision, made by a person, recorded on chain.
+            only spend it into a swap you authorize. That single constraint is what makes the graph
+            exist.
           </p>
 
+          <div className="cards">
+            <article className="card">
+              <div className="icon">
+                <BurstIcon />
+              </div>
+              <h3>Fees become allocation</h3>
+              <p>
+                Trading activity funds the treasury. Each epoch releases a defined share of it to the
+                holders in that epoch&apos;s snapshot.
+              </p>
+              <span className="note">Deterministic, frozen at a recorded slot</span>
+            </article>
+
+            <article className="card">
+              <div className="icon">
+                <RingIcon />
+              </div>
+              <h3>You direct it</h3>
+              <p>
+                Buy back the Main Token, or paste any Solana mint. The agent quotes, inspects and
+                explains — it never chooses.
+              </p>
+              <span className="note">Two wallet approvals, always</span>
+            </article>
+
+            <article className="card">
+              <div className="icon">
+                <GridIcon />
+              </div>
+              <h3>The network records it</h3>
+              <p>
+                Each confirmed swap is an infection event, verified against the transaction&apos;s own
+                balances before it counts.
+              </p>
+              <span className="note">Chain-derived, not app-asserted</span>
+            </article>
+          </div>
+        </section>
+
+        <section>
+          <h2>
+            The loop, <span className="dim">end to end</span>
+          </h2>
           <ol className="flow">
             <li>
               <span>
@@ -108,9 +179,7 @@ export default function LandingPage() {
               </span>
             </li>
             <li>
-              <span>
-                They choose: buy back the Main Token, or paste any Solana mint address.
-              </span>
+              <span>They choose: buy back the Main Token, or paste any Solana mint address.</span>
             </li>
             <li>
               <span>
@@ -133,18 +202,21 @@ export default function LandingPage() {
         </section>
 
         <section>
-          <div className="kicker">Lineage</div>
-          <h2>Every edge is two transactions from one wallet.</h2>
+          <h2>
+            Every edge is two transactions
+            <br />
+            <span className="dim">from one wallet</span>
+          </h2>
           <p>
             It would be easy to draw a beautiful tree. If every asset&apos;s parent were simply the
             Main Token, the graph would be one level deep — a star — and inventing depth to make it
             look organic would be fabrication.
           </p>
           <p>
-            So the rule is contact tracing. An asset&apos;s parent is the previous asset that its{" "}
-            <em>index case</em> — the first agent to bring capital there — had itself allocated to.
-            If that agent was allocating for the first time, the parent is Patient Zero, because the
-            capital genuinely came from Main Token fees.
+            So the rule is contact tracing. An asset&apos;s parent is the previous asset that its
+            index case — the first agent to bring capital there — had itself allocated to. If that
+            agent was allocating for the first time, the parent is Patient Zero, because the capital
+            genuinely came from Main Token fees.
           </p>
 
           <div className="figure">
@@ -167,15 +239,15 @@ export default function LandingPage() {
             <div className="def">
               <dt>Parent</dt>
               <dd>
-                The previous asset an asset&apos;s index case had infected. Frozen at first
-                infection, never revised.
+                The previous asset an asset&apos;s index case had infected. Frozen at first infection,
+                never revised.
               </dd>
             </div>
             <div className="def">
               <dt>Generation</dt>
               <dd>
-                Depth in that tree. Patient Zero is zero. Deliberately <em>not</em> the same thing as
-                an epoch, and shown separately.
+                Depth in that tree. Patient Zero is zero. Deliberately not the same thing as an
+                epoch, and shown separately.
               </dd>
             </div>
             <div className="def">
@@ -186,53 +258,9 @@ export default function LandingPage() {
         </section>
 
         <section>
-          <div className="kicker">The agent</div>
-          <h2>It prepares and explains. It never chooses.</h2>
-          <p>
-            Your agent inspects the mint, builds the transaction, surfaces what looks dangerous and
-            shows you your history. What it cannot do is act.
-          </p>
-
-          <div className="cards">
-            <div className="card">
-              <div className="num">01</div>
-              <h3>Two signatures, always</h3>
-              <p>
-                One for a plain-language authorization naming the mint, the amount and your minimum
-                output. One for the transaction itself, where you are the fee payer — so it is
-                invalid without you.
-              </p>
-            </div>
-            <div className="card">
-              <div className="num">02</div>
-              <h3>Metadata is data</h3>
-              <p>
-                Token names and descriptions are attacker-controlled text. They are stripped of
-                control characters, capped, never branched on, and never treated as instructions.
-              </p>
-            </div>
-            <div className="card">
-              <div className="num">03</div>
-              <h3>Checks that block</h3>
-              <p>
-                Live mint authority, freeze authority, transfer fees, permanent delegates. A transfer
-                hook or a default-frozen mint is refused outright, not warned about.
-              </p>
-            </div>
-            <div className="card">
-              <div className="num">04</div>
-              <h3>Numbers from the chain</h3>
-              <p>
-                An allocation counts only after the transaction is re-read and its own pre/post
-                balances confirm you received the token. The database indexes facts, not claims.
-              </p>
-            </div>
-          </div>
-        </section>
-
-        <section>
-          <div className="kicker">Honest limits</div>
-          <h2>What this is not.</h2>
+          <h2>
+            What this <span className="dim">is not</span>
+          </h2>
           <p>
             This is a prototype mechanism, and the parts that are not finished are worth stating
             before you connect anything.
@@ -260,6 +288,18 @@ export default function LandingPage() {
             </ul>
           </div>
         </section>
+
+        <div className="cta-block">
+          <Traces />
+          <h2>Direct your first allocation</h2>
+          <p>
+            Connect the wallet that held the Main Token at the epoch snapshot. Connecting is
+            read-only, and nothing moves until you sign.
+          </p>
+          <Link href="/agent" className="btn btn-light">
+            Open your agent
+          </Link>
+        </div>
       </div>
 
       <div className="wrap">
@@ -281,8 +321,7 @@ export default function LandingPage() {
             Nothing here is financial, legal or tax advice, and nothing here is an offer. Directing
             an allocation means buying a token on a public market with all of the risk that carries,
             including total loss. The economic mechanism is experimental and may change or be
-            switched off. This project is not affiliated with, endorsed by, or connected to Anthropic
-            or any other company whose design language may have inspired this page.
+            switched off. This project is independent and not affiliated with any other company.
           </p>
         </footer>
       </div>
@@ -290,10 +329,178 @@ export default function LandingPage() {
   );
 }
 
+/* ------------------------------------------------------------------ */
+/* Artwork                                                             */
+/* ------------------------------------------------------------------ */
+
+function Mark() {
+  return (
+    <svg width="26" height="26" viewBox="0 0 26 26" aria-hidden="true">
+      {[10.5, 7.5, 4.5].map((r) => (
+        <circle key={r} cx="13" cy="13" r={r} fill="none" stroke="#ff5101" strokeWidth="1.6" />
+      ))}
+      <circle cx="13" cy="13" r="2" fill="#ff5101" />
+    </svg>
+  );
+}
+
+/**
+ * The hero figure: Patient Zero at the centre, generations as concentric rings.
+ * It illustrates the model rather than reporting it — the live network lives at
+ * /network, where every node comes from a confirmed transaction.
+ */
+function OrbitFigure() {
+  const cx = 450;
+  const cy = 430;
+  const rings = [
+    { r: 130, nodes: 5, size: 5.5, seed: 0.4 },
+    { r: 210, nodes: 9, size: 4.5, seed: 1.1 },
+    { r: 292, nodes: 13, size: 3.8, seed: 0.2 },
+    { r: 376, nodes: 17, size: 3.2, seed: 1.7 },
+  ];
+
+  return (
+    <svg viewBox="0 0 900 700" role="img" aria-label="Propagation rings radiating from Patient Zero">
+      <defs>
+        <radialGradient id="core" cx="50%" cy="50%">
+          <stop offset="0%" stopColor="#ffb08a" />
+          <stop offset="55%" stopColor="#ff5101" />
+          <stop offset="100%" stopColor="#c73900" />
+        </radialGradient>
+      </defs>
+
+      {rings.map((ring) => (
+        <circle
+          key={ring.r}
+          cx={cx}
+          cy={cy}
+          r={ring.r}
+          fill="none"
+          stroke="#ff5101"
+          strokeOpacity={0.18}
+          strokeWidth="1"
+        />
+      ))}
+
+      {rings.map((ring) =>
+        Array.from({ length: ring.nodes }, (_, i) => {
+          // Deterministic placement — no randomness, so the figure is identical
+          // on the server and in the browser and never hydrates mismatched.
+          const angle = (i / ring.nodes) * Math.PI * 2 + ring.seed;
+          const x = cx + Math.cos(angle) * ring.r;
+          const y = cy + Math.sin(angle) * ring.r;
+          const opacity = 0.35 + 0.65 * ((Math.sin(angle * 3 + ring.seed) + 1) / 2);
+          return (
+            <circle
+              key={`${ring.r}-${i}`}
+              cx={x}
+              cy={y}
+              r={ring.size}
+              fill="#ff5101"
+              fillOpacity={opacity}
+            />
+          );
+        }),
+      )}
+
+      {rings[0] &&
+        Array.from({ length: rings[0].nodes }, (_, i) => {
+          const angle = (i / rings[0].nodes) * Math.PI * 2 + rings[0].seed;
+          return (
+            <line
+              key={`spoke-${i}`}
+              x1={cx + Math.cos(angle) * 26}
+              y1={cy + Math.sin(angle) * 26}
+              x2={cx + Math.cos(angle) * (rings[0].r - 8)}
+              y2={cy + Math.sin(angle) * (rings[0].r - 8)}
+              stroke="#ff5101"
+              strokeOpacity="0.28"
+              strokeWidth="1"
+            />
+          );
+        })}
+
+      <circle cx={cx} cy={cy} r="46" fill="#ff5101" fillOpacity="0.12" />
+      <circle cx={cx} cy={cy} r="20" fill="url(#core)" />
+    </svg>
+  );
+}
+
+/** Dot artwork for the cards, in the manner of the reference design. */
+function BurstIcon() {
+  const dots: Array<{ x: number; y: number; r: number }> = [];
+  [
+    { ring: 9, n: 6, r: 1.7 },
+    { ring: 19, n: 12, r: 1.9 },
+    { ring: 29, n: 18, r: 2.1 },
+  ].forEach(({ ring, n, r }) =>
+    Array.from({ length: n }, (_, i) => {
+      const a = (i / n) * Math.PI * 2;
+      dots.push({ x: 34 + Math.cos(a) * ring, y: 34 + Math.sin(a) * ring, r });
+    }),
+  );
+  return (
+    <svg width="68" height="68" viewBox="0 0 68 68" aria-hidden="true">
+      <circle cx="34" cy="34" r="2.4" fill="#ff5101" />
+      {dots.map((d, i) => (
+        <circle key={i} cx={d.x} cy={d.y} r={d.r} fill="#ff5101" />
+      ))}
+    </svg>
+  );
+}
+
+function RingIcon() {
+  const n = 26;
+  return (
+    <svg width="68" height="68" viewBox="0 0 68 68" aria-hidden="true">
+      {Array.from({ length: n }, (_, i) => {
+        const a = (i / n) * Math.PI * 2;
+        return (
+          <circle key={i} cx={34 + Math.cos(a) * 27} cy={34 + Math.sin(a) * 27} r="2.4" fill="#ff5101" />
+        );
+      })}
+    </svg>
+  );
+}
+
+function GridIcon() {
+  const dots: Array<{ x: number; y: number }> = [];
+  const step = 7;
+  const span = 4;
+  for (let row = -span; row <= span; row++) {
+    for (let col = -span; col <= span; col++) {
+      // Diamond mask: keep the cells inside the rotated square.
+      if (Math.abs(row) + Math.abs(col) <= span) {
+        dots.push({ x: 34 + col * step, y: 34 + row * step });
+      }
+    }
+  }
+  return (
+    <svg width="68" height="68" viewBox="0 0 68 68" aria-hidden="true">
+      {dots.map((d, i) => (
+        <circle key={i} cx={d.x} cy={d.y} r="2.2" fill="#ff5101" />
+      ))}
+    </svg>
+  );
+}
+
+/** Decorative circuit traces for the orange call-to-action block. */
+function Traces() {
+  return (
+    <svg className="traces" viewBox="0 0 1140 380" preserveAspectRatio="none" aria-hidden="true">
+      <path d="M0 34 H150 L182 4 H330" />
+      <path d="M0 62 H120 L166 108 H300" />
+      <path d="M14 96 L64 96 L150 182 L150 250" />
+      <path d="M1140 300 H1010 L964 254 H820" />
+      <path d="M1140 272 H1046 L1010 236 H900" />
+      <path d="M1126 216 L1066 216 L980 130 L980 62" />
+    </svg>
+  );
+}
+
 /**
  * The lineage rule, drawn. Hand-laid rather than generated: it illustrates the
- * definition and is not a live view of the network — that lives at /network,
- * where every node comes from a confirmed transaction.
+ * definition and is not a live view of the network.
  */
 function PropagationDiagram() {
   const nodes = [
@@ -344,11 +551,7 @@ function PropagationDiagram() {
       {nodes.map((n) => (
         <g key={n.id}>
           <circle className={n.main ? "dg-node is-root" : "dg-node"} cx={n.x} cy={n.y} r={n.r} />
-          <text
-            className={n.main ? "dg-label is-root" : "dg-label"}
-            x={n.x + n.r + 9}
-            y={n.y + 4}
-          >
+          <text className={n.main ? "dg-label is-root" : "dg-label"} x={n.x + n.r + 9} y={n.y + 4}>
             {n.label}
           </text>
         </g>

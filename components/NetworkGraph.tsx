@@ -100,8 +100,8 @@ export function NetworkGraph({ nodes, edges }: { nodes: GraphNode[]; edges: Grap
           >
             <circle
               r={r}
-              fill={node.isMain ? "#1c5c38" : "#131619"}
-              stroke={node.isMain ? "#4ade80" : "#2b3138"}
+              fill={node.isMain ? "#7a2b0c" : "#131619"}
+              stroke={node.isMain ? "#ff6a26" : "#2b3138"}
               strokeWidth={1.2}
             />
             <text className="node-label" x={r + 7} y={-1}>

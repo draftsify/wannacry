@@ -13,8 +13,11 @@
   --text: #dfe3e8;
   --muted: #7d868f;
   --dim: #565e66;
-  --accent: #4ade80;
-  --accent-dim: #1c5c38;
+  /* Shared with the landing page so the explorer and the front door read as
+     one product. Slightly lifted from the brand #ff5101 because this value is
+     used on small text against near-black. */
+  --accent: #ff6a26;
+  --accent-dim: #7a2b0c;
   --warn: #e0b341;
   --danger: #e06c56;
   --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
